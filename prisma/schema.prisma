@@ -1,0 +1,22 @@
+// Configuração do Banco
+datasource db {
+  provider = "mysql" // ou "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Gerador do Cliente (o que usamos no código Node)
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Modelo de Usuário
+model User {
+  id        String   @id @default(uuid()) // ID único universal
+  name      String
+  email     String   @unique             // Índice único para busca rápida
+  phone     String
+  createdAt DateTime @default(now())    // Data de cadastro automática
+  updatedAt DateTime @updatedAt          // Atualiza sempre que o registro mudar
+
+  @@map("users") // Nome da tabela no banco de dados (em minúsculo/plural)
+}

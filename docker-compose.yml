@@ -1,0 +1,27 @@
+# version: "3.9"
+
+services:
+  nodejs:
+    image: node:24
+    container_name: nodejs
+    env_file:
+      - .env
+    volumes:
+      - ./:/var/www
+      - /var/www/node_modules
+    working_dir: /var/www
+    # Se for rodar um servidor, mude o command para algo como:
+    #command: npm run dev 
+    command: tail -f /dev/null
+    ports:
+      - "3001:3000" # Permite acessar o Node em localhost:3000
+    depends_on:
+      - database
+  database:
+    image: mysql:8
+    container_name: database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: application
+    ports:
+      - "3395:3306"
