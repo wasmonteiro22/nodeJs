@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { CreateUserController } from './controllers/CreateUserController';
+import { UserController } from './controllers/UserController';
 
 const usersRoutes = Router();
-const createUserController = new CreateUserController();
+const userController = new UserController();
 
 // A rota deve chamar o método handle
-usersRoutes.post('/', createUserController.handle);
+usersRoutes.post('/', userController.handle);
+usersRoutes.get('/:email', userController.show); 
 //usersRoutes.get('/:id', (req, res) => { ... }); 
 
 export { usersRoutes };
