@@ -8,6 +8,7 @@ async function main() {
       name: 'Admin',
       email: 'admin@test.com',
       phone: '+553199999999',
+      password: '123456'
     },
   })
 

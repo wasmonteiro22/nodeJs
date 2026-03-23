@@ -13,10 +13,24 @@ generator client {
 model User {
   id        String   @id @default(uuid()) // ID único universal
   name      String
-  email     String   @unique             // Índice único para busca rápida
+  email     String   @unique // Índice único para busca rápida
   phone     String
-  createdAt DateTime @default(now())    // Data de cadastro automática
-  updatedAt DateTime @updatedAt          // Atualiza sempre que o registro mudar
+  password  String
+  createdAt DateTime @default(now()) // Data de cadastro automática
+  updatedAt DateTime @updatedAt // Atualiza sempre que o registro mudar
+  logins    login[]
 
   @@map("users") // Nome da tabela no banco de dados (em minúsculo/plural)
+}
+
+//Modelo de Login
+model login {
+  id        String   @id @default(uuid()) // É boa prática toda tabela ter seu próprio ID
+  token     String   @db.Text
+  createdAt DateTime @default(now()) // Data de criação automática
+
+  user_id String // ID único universal
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("login") // Nome da tabela no banco de dados (em minúsculo/plural)
 }

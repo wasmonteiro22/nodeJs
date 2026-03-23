@@ -1,6 +1,7 @@
 import { UsersRepository } from '../repositories/UsersRepository';
 import { AppError } from '../../../shared/errors/AppError';
 import { CreateUserDTO } from '../dtos/createUserSchema';
+import bcrypt from 'bcryptjs';
 
 export class CreateUserService {
   private usersRepository: UsersRepository;
@@ -17,6 +18,8 @@ export class CreateUserService {
       // O Global Error Handler vai transformar isso em um 409 Conflict
       throw new AppError('Este e-mail já está cadastrado em nossa base.', 409);
     }
+
+    data.password = await bcrypt.hash(data.password, 8)
 
     // 2. Persistência
     const user = await this.usersRepository.create(data);

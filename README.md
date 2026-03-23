@@ -157,6 +157,10 @@ npx prisma db seed
 # ▶️ 11. Rodar aplicação
 
 ```bash
+
+docker compose exec nodejs npm install bcryptjs
+docker compose exec nodejs npm install @types/bcryptjs -D
+
 npm run dev
 ```
 
