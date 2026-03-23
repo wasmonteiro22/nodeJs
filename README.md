@@ -145,6 +145,11 @@ npx prisma generate
 
 ```bash
 npx prisma db push
+
+npm install ts-node --save-dev
+
+Rodar o seed:
+npx prisma db seed
 ```
 
 ---
