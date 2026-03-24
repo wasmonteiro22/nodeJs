@@ -34,3 +34,12 @@ model login {
 
   @@map("login") // Nome da tabela no banco de dados (em minúsculo/plural)
 }
+
+//Modelo Token invalidado
+model TokenBlacklist {
+  id        String   @id @default(uuid())
+  token     String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@map("token_blacklist")
+}

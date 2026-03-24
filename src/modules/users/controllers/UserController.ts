@@ -55,7 +55,7 @@ export class UserController {
     return res.status(204).send();
   }
 
-  //UPDATE user
+  // UPDATE user
   async update(req: Request, res: Response) {
     const data = updateUserSchema.parse(req.body);
 

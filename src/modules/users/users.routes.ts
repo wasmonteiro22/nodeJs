@@ -1,11 +1,16 @@
 import { Router } from 'express';
 import { UserController } from './controllers/UserController';
+import { authMiddleware } from '../../shared/middlewares/authMiddleware';
 
 const usersRoutes = Router();
 const userController = new UserController();
 
 // A rota deve chamar o método handle
 usersRoutes.post('/', userController.handle);
+
+// 🔒 APLICA MIDDLEWARE A PARTIR DAQUI
+usersRoutes.use(authMiddleware)
+
 usersRoutes.get('/:email', userController.show); 
 usersRoutes.get('/', userController.getAll); 
 usersRoutes.delete('/:email', userController.delete); 
