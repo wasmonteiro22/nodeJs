@@ -33,7 +33,24 @@ export async function authMiddleware(
     const decoded = jwt.verify(token, process.env.JWT_SECRET!)
     req.user = decoded as JwtPayload
     return next()
-  } catch (err) {
+  } catch (err: any) {
+    
+    // 1. Verifica se o erro é especificamente de expiração
+    if (err.name === 'TokenExpiredError') {
+      //console.log("O token expirou!");
+      return res.status(401).json({ 
+        error: 'token.expired', 
+        message: 'Sua sessão expirou, faça login novamente.' 
+      });
+    }
+
+    // 2. Trata outros erros de JWT (token malformado, assinatura inválida, etc)
+    if (err.name === 'JsonWebTokenError') {
+      return res.status(401).json({ 
+        error: 'token.invalid', 
+        message: 'Token inválido.' 
+      });
+    }
     return res.status(401).json({ message: err.message })
   }
 
