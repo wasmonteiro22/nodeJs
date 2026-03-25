@@ -25,3 +25,13 @@ services:
       MYSQL_DATABASE: application
     ports:
       - "3395:3306"
+  redis:
+      image: redis:alpine
+      container_name: redis
+      ports:
+        - "6379:6379" # Porta padrão do Redis mapeada para o seu PC
+      volumes:
+        - redis_data:/data
+
+volumes:
+    redis_data: # Volume persistente para não perder os dados do Redis ao reiniciar
