@@ -11,28 +11,29 @@ generator client {
 
 // Modelo de Usuário
 model User {
-  id        String   @id @default(uuid()) // ID único universal
-  name      String
-  email     String   @unique // Índice único para busca rápida
-  phone     String
-  password  String
-  createdAt DateTime @default(now()) // Data de cadastro automática
-  updatedAt DateTime @updatedAt // Atualiza sempre que o registro mudar
-  logins    login[]
+  id            String         @id @default(uuid()) // ID único universal
+  name          String
+  email         String         @unique // Índice único para busca rápida
+  phone         String
+  password      String
+  createdAt     DateTime       @default(now()) // Data de cadastro automática
+  updatedAt     DateTime       @updatedAt // Atualiza sempre que o registro mudar
+  refreshTokens RefreshToken[]
 
   @@map("users") // Nome da tabela no banco de dados (em minúsculo/plural)
 }
 
 //Modelo de Login
-model login {
+model RefreshToken {
   id        String   @id @default(uuid()) // É boa prática toda tabela ter seu próprio ID
   token     String   @db.Text
   createdAt DateTime @default(now()) // Data de criação automática
+  expiresIn DateTime @default(now()) // Data de criação automática
 
   user_id String // ID único universal
   user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
-  @@map("login") // Nome da tabela no banco de dados (em minúsculo/plural)
+  @@map("refresh_token") // Nome da tabela no banco de dados (em minúsculo/plural)
 }
 
 //Modelo Token invalidado

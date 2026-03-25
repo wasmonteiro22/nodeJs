@@ -1,17 +1,16 @@
-import { LoginRepository } from '../repositories/LoginRepository';
 import { UsersRepository } from '../../users/repositories/UsersRepository';
 import { AppError } from '../../../shared/errors/AppError';
 import { LoginUserDTO } from '../dtos/loginUserSchema';
-import jwt from 'jsonwebtoken';
+import { RefreshTokenService } from './RefreshTokenService';
 import { compare } from 'bcryptjs';
 
 export class loginUserService {
-  private loginRepository: LoginRepository;
   private usersRepository: UsersRepository;
+  private refreshTokenService: RefreshTokenService;
 
   constructor() {
-    this.loginRepository = new LoginRepository();
     this.usersRepository = new UsersRepository;
+    this.refreshTokenService = new RefreshTokenService;
   }
 
   async login(data: LoginUserDTO) {
@@ -32,16 +31,7 @@ export class loginUserService {
     if (!process.env.JWT_SECRET) {
       throw new Error('JWT_SECRET not defined')
     }
-    const token = jwt.sign(
-      { userId: userAlreadyExists.id },
-      process.env.JWT_SECRET,
-      { expiresIn: '1d' }
-    );
-    const dataLogin = { token: token, user_id: userAlreadyExists.id };
-
-    // 2. Persistência
-    const login = await this.loginRepository.create(dataLogin);
-
-    return {userId: userAlreadyExists.id, token : login.token};
+    
+    return this.refreshTokenService.refreshToken( null, userAlreadyExists.id, false);
   }
 }

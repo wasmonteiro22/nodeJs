@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { prisma } from '../../database/prisma';
+import { RefreshTokenRepository } from '../../modules/auth/repositories/RefreshTokenRepository'
+import { LoginRepository } from '../../modules/auth/repositories/LoginRepository'
 import jwt from 'jsonwebtoken';
 
 export async function authMiddleware(
@@ -7,13 +8,16 @@ export async function authMiddleware(
   res: Response, 
   next: NextFunction
 ) {
+  const refreshTokenRepository = new RefreshTokenRepository()
+  const loginRepository = new LoginRepository()
   const authHeader = req.headers.authorization
   const [, token] = authHeader.split(' ')
-  const blacklisted = await prisma.TokenBlacklist.findFirst({
-    where: { token }
-  })
+  const blacklisted = await loginRepository.getToken(token)
 
-  if (blacklisted) {
+  //Não pode ser utilizado um token de tipo -> Refresh Token
+  const chekTypeToken = await refreshTokenRepository.getRefreshToken(token);
+  
+  if (blacklisted || chekTypeToken) {
     return res.status(401).json({ message: 'Token invalidated or expired!' })
   }
 
