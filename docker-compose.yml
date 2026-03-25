@@ -29,7 +29,7 @@ services:
       image: redis:alpine
       container_name: redis
       ports:
-        - "6379:6379" # Porta padrão do Redis mapeada para o seu PC
+        - "6379:6379"
       volumes:
         - redis_data:/data
 
