@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { RefreshTokenRepository } from '../../modules/auth/repositories/RefreshTokenRepository'
 import { LoginRepository } from '../../modules/auth/repositories/LoginRepository'
 import jwt from 'jsonwebtoken';
+import { JwtPayload } from '@/@types/JwtPayload';
 
 export async function authMiddleware(
   req: Request, 
@@ -30,10 +31,10 @@ export async function authMiddleware(
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!)
-    req.user = decoded as any
+    req.user = decoded as JwtPayload
     return next()
   } catch (err) {
-    return res.status(401).json({ message: 'Invalid token' })
+    return res.status(401).json({ message: err.message })
   }
 
 }

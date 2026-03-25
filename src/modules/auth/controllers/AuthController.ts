@@ -5,7 +5,7 @@ import { loginUserSchema } from '../dtos/loginUserSchema';
 import { LoginRepository } from '../repositories/LoginRepository'
 import { AppError } from '../../../shared/errors/AppError';
 import jwt from 'jsonwebtoken';
-
+import { JwtPayload } from '@/@types/JwtPayload';
 export class AuthController {
   
   // LOGIN
@@ -28,7 +28,7 @@ export class AuthController {
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET!
-    ) as any
+    ) as JwtPayload
     const userId = decoded.userId
     
     const service = new RefreshTokenService();    
