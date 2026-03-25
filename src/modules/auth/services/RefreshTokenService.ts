@@ -1,6 +1,6 @@
 import { RefreshTokenRepository } from '../repositories/RefreshTokenRepository';
 import { AppError } from '../../../shared/errors/AppError';
-import { Util } from '../../../shared/Utils/Util';
+import { Util } from '../../../shared/utils/Util';
 import jwt from 'jsonwebtoken';
 
 export class RefreshTokenService {
