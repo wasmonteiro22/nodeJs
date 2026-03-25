@@ -10,7 +10,7 @@ export class RefreshTokenService {
     this.refreshTokenRepository = new RefreshTokenRepository();
   }
 
-  async refreshToken(refreshToken: String, userId?: null, validate: boolean = true) {
+  async refreshToken(refreshToken: string, userId?: string, validate: boolean = true) {
     
     let tokenExists = false;
     let tokenAlreadyExists = null;
@@ -30,7 +30,7 @@ export class RefreshTokenService {
 
       if (expirationDate < now) {
 
-        await this.refreshTokenRepository.delete(token)
+        await this.refreshTokenRepository.delete(tokenAlreadyExists.token)
 
         throw new AppError('Este refresh token expirou. Faça login novamente.', 401);
       }
@@ -47,12 +47,12 @@ export class RefreshTokenService {
     const currentUserId = userId ?? tokenAlreadyExists?.userId;
 
 
-    const expiresAt = Util.generateExpiration(process.env.ACCESS_TOKEN_EXPIRES_MINUTES) // 15 min
+    const expiresAt = Util.generateExpiration(Number(process.env.ACCESS_TOKEN_EXPIRES_MINUTES)) // 15 min
 
     const token = jwt.sign(
       { userId: currentUserId },
-      process.env.JWT_SECRET,
-      {expiresIn: process.env.ACCESS_TOKEN_EXPIRES}
+      String(process.env.JWT_SECRET),
+      {expiresIn: process.env.ACCESS_TOKEN_EXPIRES as any}
     );
 
     // Lógica para decidir se gera um NOVO Refresh Token ou mantém o atual
@@ -60,11 +60,11 @@ export class RefreshTokenService {
     let refreshExpiresIn = tokenAlreadyExists?.expiresIn;
 
     if(!tokenExists) {
-      refreshExpiresIn = Util.generateExpiration(process.env.REFRESH_TOKEN_EXPIRES_DAYS); // 1 day
+      refreshExpiresIn = Util.generateExpiration(Number(process.env.REFRESH_TOKEN_EXPIRES_DAYS)); // 1 day
       finalRefreshToken = jwt.sign(
         { userId: currentUserId },
-        process.env.JWT_SECRET,
-        {expiresIn: process.env.REFRESH_TOKEN_EXPIRES}
+        String(process.env.JWT_SECRET),
+        {expiresIn: process.env.REFRESH_TOKEN_EXPIRES as any}
       );
 
       const dataAuth = {user: {

@@ -3,15 +3,15 @@ import { prisma } from '../../../database/prisma';
 export class RefreshTokenRepository {
   
   async getRefreshToken(token: string) {
-    return await prisma.RefreshToken.findFirst({ where: { token: token }, orderBy: { createdAt: 'desc' }});
+    return await prisma.refreshToken.findFirst({ where: { token: token }, orderBy: { createdAt: 'desc' }});
   }
   
   async create(data: any) {
-    return await prisma.RefreshToken.create({ data });
+    return await prisma.refreshToken.create({ data });
   }
 
-  async delete(token: String) {
-    return await prisma.RefreshToken.delete({
+  async delete(token: string) {
+    return await prisma.refreshToken.deleteMany({
           where: { token: token }
         })
   }
