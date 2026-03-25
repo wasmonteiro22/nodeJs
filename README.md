@@ -1,139 +1,80 @@
-# nodeJs
-Desenvolvimento e Aprendizado
+# 🚀 Node.js Backend API
 
-
-# 🚀 Setup Backend Node.js + Prisma + MySQL (Docker)
-
-Este guia documenta todo o processo necessário para configurar um backend com **Node.js + TypeScript + Prisma + MySQL via Docker**, incluindo os erros comuns enfrentados e como resolvê-los.
+API backend desenvolvida com **Node.js + TypeScript + Express + Prisma**, contendo autenticação completa com JWT, refresh token, filas com Redis (BullMQ) e testes automatizados com Jest.
 
 ---
 
-# 📦 Pré-requisitos
+## 📌 Tecnologias utilizadas
 
-* Docker + Docker Compose
-* Node.js (local opcional)
-* Projeto Node inicializado (`package.json`)
-
----
-
-# 🐳 1. Docker Compose
-
-```yaml
-services:
-  nodejs:
-    image: node:24
-    container_name: nodejs
-    env_file:
-      - .env
-    volumes:
-      - ./:/var/www
-      - /var/www/node_modules
-    working_dir: /var/www
-    command: sh -c "npm install && npx prisma generate && npm run dev"
-    ports:
-      - "3001:3000"
-    depends_on:
-      - database
-
-  database:
-    image: mysql:8
-    container_name: database
-    command: --default-authentication-plugin=mysql_native_password
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: application
-    ports:
-      - "3395:3306"
-```
+* Node.js
+* TypeScript
+* Express
+* Prisma ORM (versão 6)
+* MySQL
+* JWT (JSON Web Token)
+* BullMQ + Redis (filas)
+* Jest + Supertest (testes)
+* Zod (validação)
 
 ---
 
-# 🔐 2. Variáveis de ambiente (.env)
+## ⚙️ Pré-requisitos
 
-```env
-DATABASE_URL="mysql://root:root@database:3306/application"
-```
+* Node.js instalado
+* Docker (opcional, mas recomendado)
+* MySQL
+* Redis
 
 ---
 
-# 🧠 3. Prisma (VERSÃO ESTÁVEL)
-
-## Instalar Prisma 6 (IMPORTANTE)
+## 📦 Instalação
 
 ```bash
-npm remove prisma @prisma/client
+git clone <repo>
+cd projeto
+npm install
+```
+
+---
+
+## ⚠️ Prisma (IMPORTANTE)
+
+Este projeto utiliza **Prisma v6**, pois a versão 7 possui breaking changes.
+
+Instale manualmente:
+
+```bash
 npm install prisma@6 @prisma/client@6
 ```
 
 ---
 
-## schema.prisma
+## 🔐 Variáveis de ambiente
 
-```prisma
-datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-}
+Crie um `.env`:
 
-generator client {
-  provider = "prisma-client-js"
-}
+```env
+DATABASE_URL="mysql://user:password@localhost:3306/database"
+
+JWT_SECRET="seu_secret_aqui"
+
+ACCESS_TOKEN_EXPIRES=15
+REFRESH_TOKEN_EXPIRES=1440
 ```
 
 ---
 
-# 🧩 4. Prisma Client
+## 🧱 Banco de dados (Prisma)
 
-```ts
-// src/database/prisma.ts
-import { PrismaClient } from '@prisma/client'
-
-export const prisma = new PrismaClient()
-```
-
----
-
-# 📁 5. Estrutura recomendada
-
-```
-src/
-  database/
-    prisma.ts
-  modules/
-    users/
-      controllers/
-      services/
-      repositories/
-```
-
----
-
-# ⚙️ 6. Subindo o ambiente
+### 🔄 Rodar migrations
 
 ```bash
-docker compose down -v
-docker compose up -d --build
+npx prisma migrate dev
 ```
 
 ---
 
-# 🔧 7. Acessar container
-
-```bash
-docker exec -it nodejs sh
-```
-
----
-
-# 📦 8. Instalar dependências
-
-```bash
-npm install
-```
-
----
-
-# 🔄 9. Gerar Prisma Client
+### 📦 Gerar client
 
 ```bash
 npx prisma generate
@@ -141,129 +82,186 @@ npx prisma generate
 
 ---
 
-# 🗃️ 10. Criar estrutura no banco
+### 🧹 Resetar banco (DEV)
 
 ```bash
-npx prisma db push
+npx prisma migrate reset
+```
 
-npm install ts-node --save-dev
+---
 
-Rodar o seed:
+### 🌱 Seed
+
+```bash
 npx prisma db seed
 ```
 
 ---
 
-# ▶️ 11. Rodar aplicação
+## 🚀 Rodar aplicação
 
 ```bash
-
-docker compose exec nodejs npm install bcryptjs
-docker compose exec nodejs npm install @types/bcryptjs -D
-
 npm run dev
 ```
 
 ---
 
-# 🧪 12. Testar variáveis de ambiente
+## 📬 Filas com Redis (BullMQ)
+
+### ▶️ Subir Redis (Docker)
 
 ```bash
-echo $DATABASE_URL
+docker run -p 6379:6379 redis
 ```
 
 ---
 
-# 📡 13. Testar API
+### ▶️ Rodar Worker
 
-Exemplo de resposta esperada:
+```bash
+npx ts-node src/shared/queue/emailWorker.ts
+```
+
+---
+
+### 📌 Exemplo de uso
+
+A API envia jobs para fila:
+
+* Email de boas-vindas
+* Reset de senha
+* Eventos assíncronos
+
+---
+
+## 🧪 Testes com Jest
+
+### ▶️ Rodar testes
+
+arquivo específico:
+```bash
+npx jest src/tests/auth.test.ts --forceExit
+```
+
+```bash
+npm run test
+```
+
+ou
+
+```bash
+npx jest
+```
+
+---
+
+### 📌 Cobertura atual
+
+* Auth (login)
+* JWT (rotas protegidas)
+* Users (CRUD básico)
+* Validação de acesso
+
+---
+
+## 🔐 Autenticação
+
+### 📥 Login
+
+```http
+POST /auth/login
+```
+
+Retorna:
 
 ```json
 {
-  "id": "uuid",
-  "name": "Nome",
-  "email": "email@test.com",
-  "phone": "+553199999999",
-  "createdAt": "...",
-  "updatedAt": "..."
+  "user": {},
+  "tokens": {
+    "accessToken": "",
+    "refreshToken": ""
+  }
 }
 ```
 
 ---
 
-# ❗ Problemas comuns e soluções
+### 🔄 Refresh Token
 
-## 1. Prisma não conecta
-
-* Verificar `.env`
-* Verificar `DATABASE_URL`
-* Testar dentro do container
+```http
+POST /auth/refresh
+```
 
 ---
 
-## 2. Erro de permissão (EACCES)
+### 🔒 Rotas protegidas
+
+Header obrigatório:
+
+```http
+Authorization: Bearer TOKEN
+```
+
+---
+
+## 🧠 Arquitetura
 
 ```bash
-sudo chown -R $USER:$USER .
-sudo chown -R $USER:$USER ~/.cache/prisma
+src/
+  modules/
+    auth/
+    users/
+  shared/
+    database/
+    middlewares/
+    queue/
+    errors/
+    utils/
 ```
 
 ---
 
-## 3. ts-node-dev não encontrado
+## 🌳 Git Flow
+
+* `main` → produção
+* `dev` → desenvolvimento
+* `feature/*` → novas funcionalidades
+
+---
+
+## 📌 Funcionalidades
+
+* ✅ Cadastro de usuário
+* ✅ Login com JWT
+* ✅ Refresh Token
+* ✅ Middleware de autenticação
+* ✅ Hash de senha (bcrypt)
+* ✅ Validação com Zod
+* ✅ Filas com BullMQ + Redis
+* ✅ Testes com Jest
+* ✅ Prisma ORM com migrations
+
+---
+
+## 🚀 Próximos passos
+
+* Swagger (documentação)
+* RBAC (roles/permissões)
+* Cache com Redis
+* Deploy (Docker + VPS)
+
+---
+
+## 🏁 Versão
 
 ```bash
-npm install
+v1.0.0
 ```
 
 ---
 
-## 4. Prisma Client não encontrado
+## 👨‍💻 Autor
 
-```bash
-npx prisma generate
-```
-
+Washington Monteiro
+wasmont@gmail.com
 ---
-
-## 5. Container não sobe
-
-Rodar em modo debug:
-
-```yaml
-command: tail -f /dev/null
-```
-
----
-
-## 🧠 Boas práticas
-
-* Não usar Prisma diretamente no Controller
-* Separar:
-
-  * Controller → Service → Repository
-* Nunca retornar senha
-* Usar validação (ex: Zod)
-
----
-
-# 🚀 Próximos passos
-
-* Autenticação JWT
-* Hash de senha (bcrypt)
-* Migrations (`prisma migrate dev`)
-* Seed (`prisma db seed`)
-* Testes (Jest)
-
----
-
-# ✅ Conclusão
-
-* API Node funcional
-* Banco MySQL via Docker
-* Prisma configurado corretamente
-* Estrutura escalável
-
----
-
-🔥 Setup completo e pronto para produção básica.
