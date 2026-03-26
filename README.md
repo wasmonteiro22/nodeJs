@@ -164,6 +164,16 @@ npx jest
 
 ---
 
+## 📬 Postman Collection
+
+A collection do Postman está disponível na pasta:
+
+/postman
+
+Importe no Postman para testar todos os endpoints da API.
+
+---
+
 ## 🔐 Autenticação
 
 ### 📥 Login
