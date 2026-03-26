@@ -172,6 +172,8 @@ A collection do Postman está disponível na pasta:
 
 Importe no Postman para testar todos os endpoints da API.
 
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://wasmonteiro22-6132729.postman.co/workspace/18b624c9-7a6e-4f3a-8fe7-977bd97bad60/collection/53317808-b76526b5-6c78-4c94-a6d7-31ad257db812?action=share&source=copy-link&creator=53317808)
+
 ---
 
 ## 🔐 Autenticação
